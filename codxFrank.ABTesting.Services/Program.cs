@@ -39,6 +39,11 @@ namespace codxFrank.ABTesting.Services
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureKestrel(serverOptions =>
+                    {
+                        //Remove http header Server column
+                        serverOptions.AddServerHeader = false;
+                    });
                     webBuilder.UseStartup<Startup>()
                     .CaptureStartupErrors(true);
                 }).UseSerilog();

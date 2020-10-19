@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace codxFrank.ABTesting.Services.Controllers
+namespace codxFrank.ABTesting.Services.Controllers.v1
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    //[Route("api/v{version:apiVersion}/[controller]/[action]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
@@ -15,7 +17,6 @@ namespace codxFrank.ABTesting.Services.Controllers
             _logger = logger;
         }
 
-        // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
@@ -26,5 +27,12 @@ namespace codxFrank.ABTesting.Services.Controllers
             //Log.Debug("You should click the clap button if you found this post useful!");
             return new[] { "value1", "value2" };
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Get2()
+        {
+            return Ok(new[] { "value1", "value2" });
+        }
+
     }
 }
