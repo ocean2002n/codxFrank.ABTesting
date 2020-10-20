@@ -1,3 +1,6 @@
+using codxFrank.ABTesting.Services.Middleware;
+using FluentValidation.AspNetCore;
+using MicroElements.Swashbuckle.FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +23,12 @@ namespace codxFrank.ABTesting.Services
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                    .AddFluentValidation(c =>
+                    {
+                        c.RegisterValidatorsFromAssemblyContaining<Startup>();
+                        c.ValidatorFactoryType = typeof(HttpContextServiceProviderValidatorFactory);
+                    });
 
             services.AddLogging(loggingBuilder =>
                 loggingBuilder.AddSerilog()
@@ -41,21 +49,19 @@ namespace codxFrank.ABTesting.Services
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
             app.UseHttpsRedirection();
-
             app.UseSerilogRequestLogging();
-
             app.UseRouting();
-
             app.UseAuthorization();
+            
+            app.UseMiddleware<RequestResponseLoggingMiddleware>();
+            
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "api/v{version:apiVersion}/[controller]/[action]");
-                //endpoints.MapControllers();
+                endpoints.MapControllers();
             });
         }
     }
